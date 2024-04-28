@@ -9,10 +9,10 @@ Barlow Twins for PointNet
 import torch
 import torch.nn as nn
 
-import .backbone
+from .backbone import make_model as make_backbone
 
 def make_model(config):
-    bb = backbone.PointNetBackbone(config)
+    bb = make_backbone(config)
     return BarlowTwins(bb, config)
     # ToDo: 本当はpretrainedなど外部読み込みも可能にしておきたい
 
