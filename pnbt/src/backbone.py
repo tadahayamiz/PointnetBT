@@ -194,7 +194,7 @@ class PointNetBackbone(nn.Module):
             kernel_size=self.num_points, return_indices=True
             )
         self.avg_pool = nn.AvgPool1d(
-            kernel_size=self.num_points, return_indices=True
+            kernel_size=self.num_points
             )
         self.fc = nn.Linear(2 * self.dim_global_feats, self.dim_global_feats)
 
@@ -217,13 +217,11 @@ class PointNetBackbone(nn.Module):
         # pass through second MLP
         x = self.smlp2(x)
         # get global feature vector and critical indexes
-        mx, critical_indices0 = self.max_pool(x)
-        av, critical_indices1 = self.avg_pool(x)
+        mx, critical_indices = self.max_pool(x)
+        av = self.avg_pool(x)
         x = torch.cat((mx.view(bs, -1), av.view(bs, -1)), 1)
         global_features = self.fc(x)
-        critical_indices = torch.cat(
-            (critical_indices0.view(bs, -1), critical_indices1).view(bs, -1), 1
-            )
+        critical_indices = critical_indices.view(bs, -1)
         if self.local_feats:
             combined_features = torch.cat((local_features,
                                   global_features.unsqueeze(-1).repeat(1, 1, self.num_points)),
