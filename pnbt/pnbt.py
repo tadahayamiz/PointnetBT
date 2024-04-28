@@ -58,11 +58,19 @@ class PointNetBT:
         self.trainer = Trainer(self.model, self.config)
 
 
-    def prep_data(self, x_train, x_test=None):
-        """ data preparation """
+    def prep_data(self, x_train, x_test=None, train=True):
+        """
+        data preparation
+        
+        Parameters
+        ----------
+        x_train: np.array
+            training data or all data, (batch_size, num_points, input_dim)
+        
+        """
         train_loader, test_loader = prep_data(
             x_train, x_test=x_test, num_points=self.config["num_points"],
-            batch_size=self.config["batch_size"]
+            batch_size=self.config["batch_size"], train=train
             )
         return train_loader, test_loader
 
@@ -96,6 +104,41 @@ class PointNetBT:
             )
         # update
         self.trainer = Trainer(self.model, self.config)
+
+
+    def get_latent(self, X, return_idx=False):
+        """
+        get latent features, return numpy array
+        
+        Parameters
+        ----------
+        X: np.array
+            input data, (batch_size, num_points, input_dim)
+                
+        Returns
+        -------
+        latent: np.array
+            latent features
+        
+        """
+        # data loading
+        data_loader = prep_data(X, train=False)
+        latents = []
+        crit_indices = []
+        for y1, y2 in data_loader:
+            z1, ci1 = self.model.get_latent(y1)
+            if return_idx:
+                latents.append(z1)
+                crit_indices.append(ci1)
+            else:
+                z2, ci2 = self.model.get_latent(y2)
+                z = (z1 + z2) / 2
+                latents.append(z)
+        latents = torch.cat(latents, dim=0).numpy()
+        if return_idx:
+            crit_indices = torch.cat(crit_indices, dim=0).numpy()
+            return latents, crit_indices
+        return latents
 
 
 # hard coding

@@ -94,8 +94,8 @@ class BarlowTwins(nn.Module):
         loss = self.scale_factor * (on_diag + self.lambd * off_diag)
         return loss
     
-
-    def encoding(self, x):
+    @torch.no_grad()
+    def get_latent(self, x):
         z, critidx = self.backbone(x)
         return self.projector(z).detach(), critidx
 

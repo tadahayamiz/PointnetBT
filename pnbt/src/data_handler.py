@@ -183,7 +183,7 @@ def _worker_init_fn(worker_id):
 
 def prep_data(
     x_train:np.array, x_test:np.array=None, num_points:int=256, batch_size:int=32,
-    transform=(None, None), shuffle=(True, False),
+    train:bool=True, transform=(None, None), shuffle=(True, False),
     num_workers=2, pin_memory=True, ratio:float=0.01,
     random_seed=0
     ) -> Tuple[DataLoader, DataLoader]:
@@ -216,17 +216,25 @@ def prep_data(
         should be True for fast computing
 
     """
-    if x_test is None:
-        x_train, x_test = generate_subset(x_train, ratio, random_seed)
-    train_tf = transform[0]
-    if train_tf is None:
-        train_tf = [AddNoise(ratio)]
-    train_dataset = prep_dataset(x_train, num_points, train_tf)
-    test_dataset = prep_dataset(x_test, num_points, transform[1])
-    train_loader = prep_dataloader(
-        train_dataset, batch_size, shuffle[0], num_workers, pin_memory
-        )
-    test_loader = prep_dataloader(
-        test_dataset, batch_size, shuffle[1], num_workers, pin_memory
-        )
-    return train_loader, test_loader
+    if train:
+        if x_test is None:
+            x_train, x_test = generate_subset(x_train, ratio, random_seed)
+        train_tf = transform[0]
+        if train_tf is None:
+            train_tf = [AddNoise(ratio)]
+        train_dataset = prep_dataset(x_train, num_points, train_tf)
+        test_dataset = prep_dataset(x_test, num_points, transform[1])
+        train_loader = prep_dataloader(
+            train_dataset, batch_size, shuffle[0], num_workers, pin_memory
+            )
+        test_loader = prep_dataloader(
+            test_dataset, batch_size, shuffle[1], num_workers, pin_memory
+            )
+        return train_loader, test_loader
+    else:
+        test_dataset = prep_dataset(x_train, num_points)
+        test_loader = prep_dataloader(
+            test_dataset, batch_size, shuffle=False,
+            num_workers=num_workers, pin_memory=pin_memory
+            )
+        return test_loader, _

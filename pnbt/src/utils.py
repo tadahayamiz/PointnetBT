@@ -63,7 +63,7 @@ def save_checkpoint(experiment_name, model, epoch, base_dir):
     torch.save(model.state_dict(), cpfile)
 
 
-def load_experiments(
+def load_experiment(
         model, experiment_name, base_dir="experiments", checkpoint_name="model_final.pt"
         ):
     outdir = os.path.join(base_dir, experiment_name)
