@@ -141,7 +141,7 @@ class PointNetBT:
                 z2, ci2 = self.model.get_latent(y2)
                 z = (z1 + z2) / 2
                 latents.append(z)
-        latents = torch.cat(latents, dim=0).numpy()
+        latents = torch.cat(latents, dim=0).cpu().numpy()
         if return_idx:
             crit_indices = torch.cat(crit_indices, dim=0).numpy()
             return latents, crit_indices
