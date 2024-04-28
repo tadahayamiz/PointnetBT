@@ -12,8 +12,8 @@ import torch.optim as optim
 import torchvision.transforms as transforms
 import torchvision.datasets as datasets
 import numpy as np
-from typing import Tuple
 import yaml
+from tqdm.auto import tqdm
 
 from .src.backbone import PointNetBackbone
 from .src.ssl import BarlowTwins
@@ -130,7 +130,7 @@ class PointNetBT:
         data_loader, _ = prep_data(X, train=False)
         latents = []
         crit_indices = []
-        for y1, y2 in data_loader:
+        for y1, y2 in tqdm(data_loader):
             z1, ci1 = self.model.get_latent(y1)
             if return_idx:
                 latents.append(z1)
