@@ -88,22 +88,22 @@ class Trainer:
         return total_loss / len(trainloader.dataset) # 全データセットのうちのいくらかという比率になっている
 
 
+    @torch.no_grad()
     def evaluate(self, testloader):
         self.model.eval()
         total_loss = 0
         correct = 0
-        with torch.no_grad():
-            for y0, y1 in testloader:
-                # batchをdeviceへ
-                y0, y1 = y0.to(self.device), y1.to(self.device)
-                # 予測
-                loss = self.model(y0, y1)
-                # # lossの計算
-                # loss = self.loss_fn(output, label)
-                total_loss += loss.item()
-                # # accuracyの計算
-                # predictions = torch.argmax(output, dim=1)
-                # correct += torch.sum(predictions == label).item()
+        for y0, y1 in testloader:
+            # batchをdeviceへ
+            y0, y1 = y0.to(self.device), y1.to(self.device)
+            # 予測
+            loss = self.model(y0, y1)
+            # # lossの計算
+            # loss = self.loss_fn(output, label)
+            total_loss += loss.item()
+            # # accuracyの計算
+            # predictions = torch.argmax(output, dim=1)
+            # correct += torch.sum(predictions == label).item()
         accuracy = correct / len(testloader.dataset) # SSLでは不要
         avg_loss = total_loss / len(testloader.dataset)
         # return accuracy, avg_loss

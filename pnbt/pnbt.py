@@ -105,6 +105,8 @@ class PointNetBT:
         self.config, cpfile, _, _, _ = load_experiment(
             exp_name, base_dir
             )
+        bb = PointNetBackbone(self.config)
+        self.model = BarlowTwins(bb, self.config)
         self.model.load_state_dict(torch.load(cpfile))
         self.trainer = Trainer(self.model, self.config)
 
