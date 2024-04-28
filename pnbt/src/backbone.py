@@ -93,14 +93,14 @@ class Tnet(nn.Module):
         # model
         # ToDo: architecture can be modified
         self.smlp = nn.Sequential(
-            [SharedMLPBlock(self.dim, 64),
-             SharedMLPBlock(64, 128),
-             SharedMLPBlock(128, 1024)]
+            SharedMLPBlock(self.dim, 64),
+            SharedMLPBlock(64, 128),
+            SharedMLPBlock(128, 1024)
         )
         self.max_pool = nn.MaxPool1d(kernel_size=self.num_points)
         self.nonlinear = nn.Sequential(
-            [NonlinearBlock(1024, 512),
-             NonlinearBlock(512, 256)]
+            NonlinearBlock(1024, 512),
+            NonlinearBlock(512, 256)
         )
         self.dropout = nn.Dropout(p=self.dropout_ratio)
         self.fc = nn.Linear(256, self.dim**2)
@@ -167,15 +167,15 @@ class PointNetBackbone(nn.Module):
         self.tnet2 = Tnet(config2)
         # shared MLP 1
         self.smlp1 = nn.Sequential(
-            [SharedMLPBlock(self.input_dim, 64),
-             SharedMLPBlock(64, 64)]
-             )
+            SharedMLPBlock(self.input_dim, 64),
+            SharedMLPBlock(64, 64)
+            )
         # shared MLP 2
         self.smlp2 = nn.Sequential(
-            [SharedMLPBlock(64, 64),
-             SharedMLPBlock(64, 128),
-             SharedMLPBlock(128, self.dim_global_feats)]
-             )
+            SharedMLPBlock(64, 64),
+            SharedMLPBlock(64, 128),
+            SharedMLPBlock(128, self.dim_global_feats)
+            )
         # max pool to get the global features
         self.max_pool = nn.MaxPool1d(
             kernel_size=self.num_points, return_indices=True
