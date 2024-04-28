@@ -9,7 +9,7 @@ Barlow Twins for PointNet
 import torch
 import torch.nn as nn
 
-import backbone
+import .backbone
 
 def make_model(config):
     bb = backbone.PointNetBackbone(config)
