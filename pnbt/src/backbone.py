@@ -94,16 +94,17 @@ class Tnet(nn.Module):
         self.smlp = nn.Sequential(
             SharedMLPBlock(self.dim, 64),
             SharedMLPBlock(64, 128),
-            SharedMLPBlock(128, 512)
+            SharedMLPBlock(128, 256)
         )
         self.max_pool = nn.MaxPool1d(kernel_size=self.num_points)
         self.nonlinear = nn.Sequential(
-            NonlinearBlock(512, 256),
-            NonlinearBlock(256, 128)
+            NonlinearBlock(256, 128),
+            NonlinearBlock(128, 64)
         )
         self.dropout = nn.Dropout(p=self.dropout_ratio)
-        self.fc = nn.Linear(128, self.dim**2)
+        self.fc = nn.Linear(64, self.dim**2)
 
+        # note: original implementation
         # self.smlp = nn.Sequential(
         #     SharedMLPBlock(self.dim, 64),
         #     SharedMLPBlock(64, 128),
