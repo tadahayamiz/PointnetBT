@@ -15,9 +15,10 @@ import numpy as np
 from typing import Tuple
 import yaml
 
-from .src.utils import save_experiment, make_optimizer
+from .src.ssl import make_model
+from .src.utils import save_experiment, load_experiment
 from .src.trainer import Trainer
-from .src.data_handler import prep_dataset, prep_data
+from .src.data_handler import prep_data
 
 
 class PointNetBT:
@@ -28,21 +29,22 @@ class PointNetBT:
                 with open(config_path, "r") as f:
                     config = yaml.safe_load(f)
             else:
-                raise ValueError("!! Give config or config_path !!")
+                config = dict()
         default_config = {
             # backbone config
             "input_dim": 3,
             "num_points": 256,
-            "dim_global_feats": 1024,
+            "dim_global_feats": 128, # 1024
             "local_feats": False,
+            "dropout_ratio": 0.3,
             # ssl config
             "lambd": 1e-3,
-            "projection_sizes": [1024, 1024, 1024, 1024],
+            "projection_sizes": [128, 256, 128], # [1024, 1024, 1024, 1024]
             "scale_factor": 1.0,
             # trainer config
             "exp_name": "experiment",
             "epochs": 20,
-            "batch_size": 32,
+            "batch_size": 64,
             "save_model_every": 10,
             "optimizer": {
                 "name": "AdamW",
@@ -52,7 +54,8 @@ class PointNetBT:
         }
         self.config = {**default_config, **config}
         # model
-        self.trainer = Trainer(self.config)
+        self.model = make_model(self.config)
+        self.trainer = Trainer(self.model, self.config)
 
 
     def prep_data(self, x_train, x_test=None):
@@ -71,9 +74,28 @@ class PointNetBT:
         # save experiment
         save_experiment(
             self.config["exp_name"], self.config["base_dir"], self.config,
-            self.trainer.get_model(), train_losses, test_losses, accuracies
+            self.model, train_losses, test_losses, accuracies
             )
+
+
+    def load_model(self, exp_name, base_dir):
+        """
+        load model
         
+        Parameters
+        ----------
+        exp_name: str
+            experiment name
+        
+        base_dir: str
+            base directory path
+        
+        """
+        self.config, self.model, _, _, _ = load_experiment(
+            self.model, exp_name, base_dir
+            )
+        # update
+        self.trainer = Trainer(self.model, self.config)
 
 
 # hard coding

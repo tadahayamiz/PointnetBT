@@ -8,11 +8,10 @@ trainer
 """
 import torch
 
-from .ssl import make_model
 from .utils import save_checkpoint, make_optimizer
 
 class Trainer:
-    def __init__(self, config):
+    def __init__(self, model, config):
         # config
         default_config = {
             "epochs": 20,
@@ -31,13 +30,20 @@ class Trainer:
         self.save_model_every = self.config["save_model_every"]
         # models
         self.device = torch.device('cuda:0') if torch.cuda.is_available() else torch.device('cpu')
-        model = make_model(config)
         self.model = model.to(self.device)
         self.optimizer = make_optimizer(self.model.parameters(), **config["optimizer"])
 
 
     def get_model(self):
         return self.model
+    
+
+    def set_model(self, model):
+        self.model = model
+        # update
+        self.optimizer = make_optimizer(
+            self.model.parameters(), **self.config["optimizer"]
+            )
 
 
     def train(self, trainloader, testloader):
