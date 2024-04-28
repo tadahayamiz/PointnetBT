@@ -93,7 +93,7 @@ class Tnet(nn.Module):
             SharedMLPBlock(128, 256)
         )
         self.max_pool = nn.MaxPool1d(kernel_size=self.num_points)
-        self.avg_pool = nn.LPPool1d(kernel_size=self.num_points)
+        self.avg_pool = nn.AvgPool1d(kernel_size=self.num_points)
         self.nonlinear = nn.Sequential(
             NonlinearBlock(512, 256),
             NonlinearBlock(256, 128)
