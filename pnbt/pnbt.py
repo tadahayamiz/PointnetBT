@@ -71,7 +71,7 @@ class PointNetBT:
         # save experiment
         save_experiment(
             self.config["exp_name"], self.config["base_dir"], self.config,
-            self.model, train_losses, test_losses, accuracies
+            self.trainer.get_model(), train_losses, test_losses, accuracies
             )
         
 

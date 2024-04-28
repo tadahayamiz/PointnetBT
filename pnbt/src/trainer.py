@@ -36,6 +36,10 @@ class Trainer:
         self.optimizer = make_optimizer(self.model.parameters(), **config["optimizer"])
 
 
+    def get_model(self):
+        return self.model
+
+
     def train(self, trainloader, testloader):
         """
         train the model for the specified number of epochs.
