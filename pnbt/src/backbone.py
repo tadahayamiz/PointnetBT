@@ -91,19 +91,31 @@ class Tnet(nn.Module):
         self.dropout_ratio = self.config["dropout_ratio"]
         self.num_points = self.config["num_points"]
         # model
-        # ToDo: architecture can be modified
         self.smlp = nn.Sequential(
             SharedMLPBlock(self.dim, 64),
             SharedMLPBlock(64, 128),
-            SharedMLPBlock(128, 1024)
+            SharedMLPBlock(128, 512)
         )
         self.max_pool = nn.MaxPool1d(kernel_size=self.num_points)
         self.nonlinear = nn.Sequential(
-            NonlinearBlock(1024, 512),
-            NonlinearBlock(512, 256)
+            NonlinearBlock(512, 256),
+            NonlinearBlock(256, 128)
         )
         self.dropout = nn.Dropout(p=self.dropout_ratio)
-        self.fc = nn.Linear(256, self.dim**2)
+        self.fc = nn.Linear(128, self.dim**2)
+
+        # self.smlp = nn.Sequential(
+        #     SharedMLPBlock(self.dim, 64),
+        #     SharedMLPBlock(64, 128),
+        #     SharedMLPBlock(128, 1024)
+        # )
+        # self.max_pool = nn.MaxPool1d(kernel_size=self.num_points)
+        # self.nonlinear = nn.Sequential(
+        #     NonlinearBlock(1024, 512),
+        #     NonlinearBlock(512, 256)
+        # )
+        # self.dropout = nn.Dropout(p=self.dropout_ratio)
+        # self.fc = nn.Linear(256, self.dim**2)
 
 
     def forward(self, x):
