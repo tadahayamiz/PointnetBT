@@ -89,6 +89,7 @@ class BarlowTwins(nn.Module):
 
     @torch.no_grad()
     def get_latent(self, x):
+        x = x.to(self.device)
         z, critidx = self.backbone(x)
         return self.projector(z).detach(), critidx
 
