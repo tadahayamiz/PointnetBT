@@ -47,7 +47,7 @@ class Trainer:
         # training
         for i in range(self.epochs):
             train_loss = self.train_epoch(trainloader)
-            test_loss = self.evaluate(testloader)
+            _, test_loss = self.evaluate(testloader) # return accuracy and loss
             train_losses.append(train_loss)
             test_losses.append(test_loss)
             print(
