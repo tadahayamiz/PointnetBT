@@ -127,7 +127,7 @@ class PointNetBT:
         
         """
         # data loading
-        data_loader = prep_data(X, train=False)
+        data_loader, _ = prep_data(X, train=False)
         latents = []
         crit_indices = []
         for y1, y2 in data_loader:
