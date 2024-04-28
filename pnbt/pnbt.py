@@ -47,6 +47,7 @@ class PointNetBT:
                 "name": "AdamW",
                 "lr": 1e-3,
                 "weight_decay": 1e-2,
+            "batch_size": 32,
             }
         }
         self.config = {**default_config, **config}
