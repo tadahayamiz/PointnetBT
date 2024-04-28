@@ -237,4 +237,4 @@ def prep_data(
             test_dataset, batch_size, shuffle=False,
             num_workers=num_workers, pin_memory=pin_memory
             )
-        return test_loader, _
+        return test_loader, None
