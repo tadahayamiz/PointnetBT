@@ -15,7 +15,8 @@ import numpy as np
 from typing import Tuple
 import yaml
 
-from .src.ssl import make_model
+from .src.backbone import PointNetBackbone
+from .src.ssl import BarlowTwins
 from .src.utils import save_experiment, load_experiment
 from .src.trainer import Trainer
 from .src.data_handler import prep_data
@@ -55,7 +56,8 @@ class PointNetBT:
         }
         self.config = {**default_config, **config}
         # model
-        self.model = make_model(self.config)
+        bb = PointNetBackbone(self.config)
+        self.model = BarlowTwins(bb, self.config)
         self.trainer = Trainer(self.model, self.config)
 
 
@@ -100,10 +102,10 @@ class PointNetBT:
             base directory path
         
         """
-        self.config, self.model, _, _, _ = load_experiment(
-            self.model, exp_name, base_dir
+        self.config, cpfile, _, _, _ = load_experiment(
+            exp_name, base_dir
             )
-        # update
+        self.model.load_state_dict(torch.load(cpfile))
         self.trainer = Trainer(self.model, self.config)
 
 

@@ -14,10 +14,6 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-def make_model(config):
-    return PointNetBackbone(config)
-
-
 class SharedMLPBlock(nn.Module):
     """ Shared MLP block with batch normalization using conv1d """
     def __init__(self, in_channels, out_channels):

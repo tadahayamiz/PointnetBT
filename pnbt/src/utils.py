@@ -6,7 +6,7 @@ utils
 
 @author: tadahaya
 """
-import json, os, math
+import json, os
 import matplotlib.pyplot as plt
 import numpy as np
 import torch
@@ -64,7 +64,7 @@ def save_checkpoint(experiment_name, model, epoch, base_dir):
 
 
 def load_experiment(
-        model, experiment_name, base_dir="experiments", checkpoint_name="model_final.pt"
+        experiment_name, base_dir="experiments", checkpoint_name="model_final.pt"
         ):
     outdir = os.path.join(base_dir, experiment_name)
     # load config
@@ -79,10 +79,8 @@ def load_experiment(
     test_losses = data["test_losses"]
     accuracies = data["accuracies"]
     # load model
-    model = model(config)
     cpfile = os.path.join(outdir, checkpoint_name)
-    model.load_state_dict(torch.load(cpfile)) # checkpointを読み込んでから
-    return config, model, train_losses, test_losses, accuracies
+    return config, cpfile, train_losses, test_losses, accuracies
 
 
 # model preparation functions

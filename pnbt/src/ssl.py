@@ -9,14 +9,6 @@ Barlow Twins for PointNet
 import torch
 import torch.nn as nn
 
-from .backbone import make_model as make_backbone
-
-def make_model(config):
-    bb = make_backbone(config)
-    return BarlowTwins(bb, config)
-    # ToDo: 本当はpretrainedなど外部読み込みも可能にしておきたい
-
-
 def flatten(t):
     return t.reshape(t.shape[0], -1)
 
@@ -94,6 +86,7 @@ class BarlowTwins(nn.Module):
         loss = self.scale_factor * (on_diag + self.lambd * off_diag)
         return loss
     
+
     @torch.no_grad()
     def get_latent(self, x):
         z, critidx = self.backbone(x)
