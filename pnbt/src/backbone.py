@@ -186,7 +186,7 @@ class PointNetBackbone(nn.Module):
         self.smlp2 = nn.Sequential(
             SharedMLPBlock(64, 64),
             SharedMLPBlock(64, 128),
-            SharedMLPBlock(128, self.dim_global_feats)
+            SharedMLPBlock(128, self.dim_global_feats // 2)
             )
         # max pool to get the global features
         self.max_pool = nn.MaxPool1d(
@@ -195,7 +195,7 @@ class PointNetBackbone(nn.Module):
         self.avg_pool = nn.AvgPool1d(
             kernel_size=self.num_points
             )
-        self.fc = nn.Linear(2 * self.dim_global_feats, self.dim_global_feats)
+        # self.fc = nn.Linear(2 * self.dim_global_feats, self.dim_global_feats)
 
 
     def forward(self, x):
@@ -218,8 +218,7 @@ class PointNetBackbone(nn.Module):
         # get global feature vector and critical indexes
         mx, critical_indices = self.max_pool(x)
         av = self.avg_pool(x)
-        x = torch.cat((mx.view(bs, -1), av.view(bs, -1)), 1)
-        global_features = self.fc(x)
+        global_features = torch.cat((mx.view(bs, -1), av.view(bs, -1)), 1)
         critical_indices = critical_indices.view(bs, -1)
         if self.local_feats:
             combined_features = torch.cat((local_features,
