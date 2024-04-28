@@ -50,10 +50,6 @@ class PointNetBT:
             }
         }
         self.config = {**default_config, **config}
-        # for readability
-        self.lr = self.config["lr"]
-        self.weight_decay = self.config["weight_decay"]
-
         # model
         self.trainer = Trainer(self.config)
 
