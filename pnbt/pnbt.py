@@ -42,12 +42,12 @@ class PointNetBT:
             # trainer config
             "exp_name": "experiment",
             "epochs": 20,
+            "batch_size": 32,
             "save_model_every": 10,
             "optimizer": {
                 "name": "AdamW",
                 "lr": 1e-3,
                 "weight_decay": 1e-2,
-            "batch_size": 32,
             }
         }
         self.config = {**default_config, **config}
