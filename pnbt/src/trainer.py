@@ -66,15 +66,10 @@ class Trainer:
         for y0, y1 in trainloader:
             # batchをdeviceへ
             y0, y1 = y0.to(self.device), y1.to(self.device)
-
-
-            print(y0.shape, "y0.shape")
-
-
             # 勾配を初期化
             self.optimizer.zero_grad()
             # forward/loss
-            loss, _ = self.model(y0, y1) # 直接lossを返すように変更
+            loss = self.model(y0, y1) # 直接lossを返すように変更
             # backpropagation
             loss.backward()
             # パラメータ更新
@@ -93,7 +88,7 @@ class Trainer:
                 # batchをdeviceへ
                 y0, y1 = y0.to(self.device), y1.to(self.device)
                 # 予測
-                loss, _ = self.model(y0, y1)
+                loss = self.model(y0, y1)
                 # # lossの計算
                 # loss = self.loss_fn(output, label)
                 total_loss += loss.item()

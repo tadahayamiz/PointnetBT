@@ -83,11 +83,6 @@ class BarlowTwins(nn.Module):
     def forward(self, y1, y2): # 2つのtensorをinput
         z1, _ = self.backbone(y1) # (global features, critical indices)を返す
         z2, _ = self.backbone(y2)
-
-
-        print(z1.shape, "z1.shape")
-
-
         z1 = self.projector(z1)
         z2 = self.projector(z2)
         # empirical cross-correlation matrix
