@@ -56,6 +56,7 @@ class PointNetBT:
         }
         self.config = {**default_config, **config}
         # model
+        self.device = torch.device('cuda:0') if torch.cuda.is_available() else torch.device('cpu')
         bb = PointNetBackbone(self.config)
         self.model = BarlowTwins(bb, self.config)
         self.trainer = Trainer(self.model, self.config)
@@ -131,6 +132,7 @@ class PointNetBT:
         latents = []
         crit_indices = []
         for y1, y2 in tqdm(data_loader):
+            y1, y2 = y1.to(self.device), y2.to(self.device)
             z1, ci1 = self.model.get_latent(y1)
             if return_idx:
                 latents.append(z1)
