@@ -43,6 +43,7 @@ class PointNetBT:
             "scale_factor": 1.0,
             # trainer config
             "exp_name": "experiment",
+            "base_dir": None,
             "epochs": 20,
             "batch_size": 64,
             "save_model_every": 10,
