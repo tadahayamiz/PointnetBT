@@ -88,7 +88,6 @@ class Trainer:
         return total_loss / len(trainloader.dataset) # 全データセットのうちのいくらかという比率になっている
 
 
-    @torch.no_grad()
     def evaluate(self, testloader):
         self.model.eval()
         total_loss = 0
