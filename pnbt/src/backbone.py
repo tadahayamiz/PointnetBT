@@ -93,7 +93,7 @@ class Tnet(nn.Module):
             SharedMLPBlock(128, 256)
         )
         self.max_pool = nn.MaxPool1d(kernel_size=self.num_points)
-        self.avg_pool = nn.AvgPool1d(kernel_size=self.num_points)
+        self.lp_pool = nn.LPPool1d(2, kernel_size=self.num_points)
         self.nonlinear = nn.Sequential(
             NonlinearBlock(512, 256),
             NonlinearBlock(256, 128)
@@ -122,8 +122,8 @@ class Tnet(nn.Module):
         x = self.smlp(x)
         # max pool over num points
         mx = self.max_pool(x).view(bs, -1) # modified
-        av = self.avg_pool(x).view(bs, -1) # modified
-        x = torch.cat((mx, av), 1) # modified
+        lp = self.lp_pool(x).view(bs, -1) # modified
+        x = torch.cat((mx, lp), 1) # modified
         # pass through MLP
         x = self.nonlinear(x)
         x = self.dropout(x)
@@ -192,9 +192,7 @@ class PointNetBackbone(nn.Module):
         self.max_pool = nn.MaxPool1d(
             kernel_size=self.num_points, return_indices=True
             )
-        self.avg_pool = nn.AvgPool1d(
-            kernel_size=self.num_points
-            )
+        self.lp_pool = nn.LPPool1d(2, kernel_size=self.num_points)
         # self.fc = nn.Linear(2 * self.dim_global_feats, self.dim_global_feats)
 
 
@@ -217,8 +215,8 @@ class PointNetBackbone(nn.Module):
         x = self.smlp2(x)
         # get global feature vector and critical indexes
         mx, critical_indices = self.max_pool(x)
-        av = self.avg_pool(x)
-        global_features = torch.cat((mx.view(bs, -1), av.view(bs, -1)), 1)
+        lp = self.lp_pool(x)
+        global_features = torch.cat((mx.view(bs, -1), lp.view(bs, -1)), 1)
         critical_indices = critical_indices.view(bs, -1)
         if self.local_feats:
             combined_features = torch.cat((local_features,
