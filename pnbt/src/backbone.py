@@ -93,8 +93,10 @@ class Tnet(nn.Module):
             SharedMLPBlock(128, 512)
         )
         self.max_pool = nn.MaxPool1d(kernel_size=self.num_points)
+        self.avg_pool = nn.AvgPool1d(kernel_size=self.num_points)
         self.nonlinear = nn.Sequential(
-            NonlinearBlock(512, 256),
+            # NonlinearBlock(512, 256),
+            NonlinearBlock(1024, 256),
             NonlinearBlock(256, 128)
         )
         self.dropout = nn.Dropout(p=self.dropout_ratio)
@@ -120,7 +122,9 @@ class Tnet(nn.Module):
         # pass through shared MLP layers (conv1d)
         x = self.smlp(x)
         # max pool over num points
-        x = self.max_pool(x).view(bs, -1)
+        mx = self.max_pool(x).view(bs, -1) # modified
+        av = self.avg_pool(x).view(bs, -1) # modified
+        x = torch.cat((mx, av), 1) # modified
         # pass through MLP
         x = self.nonlinear(x)
         x = self.dropout(x)
@@ -189,6 +193,10 @@ class PointNetBackbone(nn.Module):
         self.max_pool = nn.MaxPool1d(
             kernel_size=self.num_points, return_indices=True
             )
+        self.avg_pool = nn.AvgPool1d(
+            kernel_size=self.num_points, return_indices=True
+            )
+        self.fc = nn.Linear(2 * self.dim_global_feats, self.dim_global_feats)
 
 
     def forward(self, x):
@@ -209,9 +217,13 @@ class PointNetBackbone(nn.Module):
         # pass through second MLP
         x = self.smlp2(x)
         # get global feature vector and critical indexes
-        global_features, critical_indices = self.max_pool(x)
-        global_features = global_features.view(bs, -1)
-        critical_indices = critical_indices.view(bs, -1)
+        mx, critical_indices0 = self.max_pool(x)
+        av, critical_indices1 = self.avg_pool(x)
+        x = torch.cat((mx.view(bs, -1), av.view(bs, -1)), 1)
+        global_features = self.fc(x)
+        critical_indices = torch.cat(
+            (critical_indices0.view(bs, -1), critical_indices1).view(bs, -1), 1
+            )
         if self.local_feats:
             combined_features = torch.cat((local_features,
                                   global_features.unsqueeze(-1).repeat(1, 1, self.num_points)),
