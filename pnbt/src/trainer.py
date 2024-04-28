@@ -66,6 +66,11 @@ class Trainer:
         for y0, y1 in trainloader:
             # batchをdeviceへ
             y0, y1 = y0.to(self.device), y1.to(self.device)
+
+
+            print(y0.shape, "y0.shape")
+
+
             # 勾配を初期化
             self.optimizer.zero_grad()
             # forward/loss

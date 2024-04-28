@@ -58,7 +58,7 @@ class PointNetBT:
     def prep_data(self, x_train, x_test=None):
         """ data preparation """
         train_loader, test_loader = prep_data(
-            x_train, x_test, num_points=self.config["num_points"],
+            x_train, x_test=x_test, num_points=self.config["num_points"],
             batch_size=self.config["batch_size"]
             )
         return train_loader, test_loader
